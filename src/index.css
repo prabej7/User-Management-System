@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'geist';
+  src: url('./assets/Fonts/Geist-Bold.otf');
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: 'geist';
+  src: url('./assets/Fonts/Geist-Black.otf');
+  font-weight: 900;
+}
+
+@font-face {
+  font-family: 'geist';
+  src: url('./assets/Fonts/Geist-Light.otf');
+  font-weight: lighter;
+}
+
+@font-face {
+  font-family: 'geist';
+  src: url('./assets/Fonts/Geist-Medium.otf');
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: 'geist';
+  src: url('./assets/Fonts/Geist-Regular.otf');
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: 'geist';
+  src: url('./assets/Fonts/Geist-SemiBold.otf');
+  font-weight: 600;
+}
+
+@font-face {
+  font-family: 'geist';
+  src: url('./assets/Fonts/Geist-Thin.otf');
+  font-weight: 100;
+}
+
+@font-face {
+  font-family: 'geist';
+  src: url('./assets/Fonts/Geist-UltraBlack.otf');
+  font-weight: 950;
+}
+
+@font-face {
+  font-family: 'geist';
+  src: url('./assets/Fonts/Geist-UltraLight.otf');
+  font-weight: 200;
+}
+
+
+*{
+  font-family: 'geist';
+}
+
+/* body{
+  background-color: rgb(19, 19, 19);
+  color: rgb(236, 236, 236);
+} */
