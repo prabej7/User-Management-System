@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import axios, { AxiosResponse } from 'axios'; 
+import { useState, useEffect } from "react";
+import axios, { AxiosResponse } from 'axios';
 import url from "@/Url";
 import { useCookies } from 'react-cookie';
 
@@ -14,20 +14,26 @@ const useLogin = () => {
     const [status, setStatus] = useState<number>(0);
     const [response, setResponse] = useState<AxiosResponse>();
 
+    useEffect(() => {
+        if (response) {
+            setStatus(response.status);
+        }
+    }, [response]);
+
     async function login(data: Data) {
         setLoading(true);
-        try {
-            const response: AxiosResponse = await axios.post(`${url}/login`, data);
+
+        axios.post(`${url}/login`, data).then((response: AxiosResponse) => {
             setResponse(response);
-            if(response.status==200){
-                setCookies('user',response.data);
+            setStatus(response.status);
+            if (response.status === 200) {
+                setCookies('user', response.data, {
+                    expires: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+                });
             }
-            setStatus(response.status); // Update status after receiving response
-        } catch (error) {
-            setStatus(201);
-        } finally {
-            setLoading(false);
-        }
+        });
+
+
     }
 
     return { login, isLoading, response, status };

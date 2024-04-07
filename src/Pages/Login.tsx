@@ -1,12 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Input } from "@/components/ui/input";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useCookies } from 'react-cookie'
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form'
 import useLogin from "@/Hooks/useLogin";
+import Account from "./Account";
 
 const schema = z.object({
     username: z.string().min(5),
@@ -15,21 +16,34 @@ const schema = z.object({
 
 type formFields = z.infer<typeof schema>
 const Login: React.FC = () => {
-    const { response, login, status } = useLogin();
+
+
+
+    const navigate = useNavigate();
+    const {  login, status,response } = useLogin();
     const [cookie, setCookies, logout] = useCookies(['user']);
+    
     const { register, handleSubmit, formState: { errors, isSubmitting }, reset, setError } = useForm<formFields>({
         resolver: zodResolver(schema),
     });
+
     async function onSubmit(data: formFields) {
         await login(data);
-        
+        console.log(status);
+        reset();
     }
+
+    useEffect(()=>{
+        if(status==200){
+           navigate('/account'); 
+        }
+    },[status]);
 
     return (
         <div className="flex h-screen justify-center flex-col items-center" >
             {cookie && cookie.user ?
                 <div className="flex flex-col gap-3 items-center">
-                    <h1>You are already logged in!</h1>
+                    <h1>You are already logged in! <Link to='/account' className=" underline" >My Account</Link></h1>
                     <Button onClick={() => logout('user')} >Logout</Button>
                 </div>
                 :
