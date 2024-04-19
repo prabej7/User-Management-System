@@ -1,11 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import useRegister from "../Hooks/useRegister";
 import { useCookies } from 'react-cookie'
+import { useEffect } from "react";
 const schema = z.object({
     username: z.string().min(5),
     password: z.string().min(8)
@@ -18,20 +19,23 @@ const Register: React.FC = () => {
     const { register, handleSubmit, formState: { errors, isSubmitting }, reset, setError } = useForm<formFields>({
         resolver: zodResolver(schema),
     });
-
+    const navigate = useNavigate();
     const { reg, isLoading, response, status } = useRegister();
 
     async function onSubmit(data: formFields) {
         await reg(data);
-        if(response?.status===200){
+    }
+
+    useEffect(() => {
+        if (response?.status === 200) {
             reset();
-        }else{
-            setError('root',{
-                message:'User already exists.',
+            navigate('/account');
+        } else if(response?.status===201) {
+            setError('root', {
+                message: 'User already exists.',
             })
         }
-
-    }
+    },[response])
     return (
         <div className="flex h-screen justify-center flex-col items-center" >
             <div>

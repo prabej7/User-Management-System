@@ -23,11 +23,17 @@ mongoose.connect(process.env.DATABASE_URL).then(() => {
 const userSchema = new mongoose.Schema({
     username:{
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     password:{
         type: String,
         required: true
+    },
+    email: {
+        type: String,
+        required: true,
+        unique: true
     }
 },timeStamp);
 
@@ -36,12 +42,14 @@ const User = mongoose.model('user',userSchema);
 app.post('/register',async(req,res)=>{
     const { username,password } = req.body;
     const isUser = await User.find({username: username});
+    console.log(isUser.length===0);
     if(isUser.length===0){
         bcrypt.genSalt(12,(error,salt)=>{
             bcrypt.hash(password,salt,async(error,hash)=>{
                 const newUser = new User({
                     username: username,
-                    password: hash
+                    password: hash,
+                    
                 });
                 const savedUser = await newUser.save();
                 res.status(200).json(savedUser);
