@@ -5,6 +5,8 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const { timeStamp, error } = require('console');
+const sendDataToPython = require('./python')
+
 
 const app = express();
 
@@ -21,49 +23,49 @@ mongoose.connect(process.env.DATABASE_URL).then(() => {
 });
 
 const userSchema = new mongoose.Schema({
-    username:{
+    username: {
         type: String,
         required: true,
         unique: true
     },
-    password:{
+    password: {
         type: String,
         required: true
     },
-    email: {
-        type: String,
-        required: true,
-        unique: true
-    }
-},timeStamp);
+    // email: {
+    //     type: String,
+    //     required: true,
+    //     unique: true
+    // }
+}, timeStamp);
 
-const User = mongoose.model('user',userSchema);
+const User = mongoose.model('user', userSchema);
 
-app.post('/register',async(req,res)=>{
-    const { username,password } = req.body;
-    const isUser = await User.find({username: username});
-    console.log(isUser.length===0);
-    if(isUser.length===0){
-        bcrypt.genSalt(12,(error,salt)=>{
-            bcrypt.hash(password,salt,async(error,hash)=>{
+app.post('/register', async (req, res) => {
+    const { username, password } = req.body;
+    const isUser = await User.find({ username: username });
+    
+    if (isUser.length === 0) {
+        bcrypt.genSalt(12, (error, salt) => {
+            bcrypt.hash(password, salt, async (error, hash) => {
                 const newUser = new User({
                     username: username,
                     password: hash,
-                    
                 });
                 const savedUser = await newUser.save();
+                sendDataToPython('./Python/main.py', [savedUser.username,savedUser.password,savedUser._id])
                 res.status(200).json(savedUser);
             })
         })
-    }else{
+    } else {
         res.status(201).json('User already exist.');
     }
 });
 
-app.post('/login',async(req,res)=>{
+app.post('/login', async (req, res) => {
     try {
         const { username, password } = req.body;
-        let user = await User.findOne({username: username});
+        let user = await User.findOne({ username: username });
         if (user) {
             bcrypt.compare(password, user.password, (err, result) => {
                 if (result) {
