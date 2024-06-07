@@ -1,4 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect,useState } from "react";
+import { FaRegEyeSlash } from "react-icons/fa";
+import { FaEye } from "react-icons/fa";
 import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -22,7 +24,7 @@ const Login: React.FC = () => {
     const navigate = useNavigate();
     const {  login, status,response } = useLogin();
     const [cookie, setCookies, logout] = useCookies(['user']);
-    
+    const [isShowPassword, setShowPassword] = useState<boolean>(false);
     const { register, handleSubmit, formState: { errors, isSubmitting }, reset, setError } = useForm<formFields>({
         resolver: zodResolver(schema),
     });
@@ -32,6 +34,10 @@ const Login: React.FC = () => {
         console.log(status);
         reset();
     }
+
+    const showPassword = () => {
+        setShowPassword(!isShowPassword);
+      };
 
     useEffect(()=>{
         if(status==200){
@@ -67,7 +73,24 @@ const Login: React.FC = () => {
                     <form className=" w-72 flex flex-col gap-2" onSubmit={handleSubmit(onSubmit)} >
                         <Input {...register('username')} placeholder="Email or username" />
                         {errors.username && <div className=" text-sm text-red-500" >{errors.username.message}</div>}
-                        <Input {...register('password')} placeholder="Password" />
+                        <div className="relative">
+          <Input
+            type={isShowPassword ? "text" : "password"}
+            {...register("password")}
+            placeholder="Password"
+          />
+          {isShowPassword ? (
+            <FaEye
+              className="absolute top-2.5 right-3 cursor-pointer"
+              onClick={showPassword}
+            />
+          ) : (
+            <FaRegEyeSlash
+              className="absolute top-2.5 right-3 cursor-pointer"
+              onClick={showPassword}
+            />
+          )}
+        </div>
                         {errors.password && <div className=" text-sm text-red-500"  >{errors.password.message}</div>}
                         <Button disabled={isSubmitting} >{isSubmitting ? 'Loading...' : 'Login'}</Button>
                         <div className="flex gap-1 text-sm justify-center mt-2" >
